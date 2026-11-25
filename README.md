@@ -1,5 +1,7 @@
 # SecureAttend: Secure QR-Based Attendance System
 
+**Project page:** https://kushalkou.github.io/cns-qr-attendance/
+
 CNS course project. The faculty laptop shows a QR code that changes every 10 seconds. A student's
 **registered phone** scans it and signs the request with a key that never leaves the phone. The server
 checks the HMAC, the time window, the device signature and a one-time nonce. It then appends the
