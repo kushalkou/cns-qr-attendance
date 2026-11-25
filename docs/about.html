@@ -27,11 +27,32 @@
 
 <h2>Team Details</h2>
 <div class="tbl"><table>
-<tr><th style="width:12%">Sl. No.</th><th>Name</th><th style="width:16%">Roll No.</th><th style="width:26%">USN</th></tr>
-<tr><td>1</td><td>Kushal Koujalagi</td><td>335</td><td>01FE23BCS106</td></tr>
-<tr><td>2</td><td>Akash Hiremath</td><td>312</td><td>01FE23BCS068</td></tr>
-<tr><td>3</td><td>Prateek Joshi</td><td>310</td><td>01FE23BCS065</td></tr>
-<tr><td>4</td><td>Sudarshan Naik</td><td>336</td><td>01FE23BCS221</td></tr>
+<tr><th style="width:10%">Sl. No.</th><th>Name</th><th style="width:22%">Role</th><th style="width:13%">Roll No.</th><th style="width:22%">USN</th></tr>
+<tr class="me"><td>1</td><td><b>Kushal Koujalagi</b></td><td><b>Lead Developer</b></td><td>335</td><td>01FE23BCS106</td></tr>
+<tr><td>2</td><td>Akash Hiremath</td><td>Team Member</td><td>312</td><td>01FE23BCS068</td></tr>
+<tr><td>3</td><td>Prateek Joshi</td><td>Team Member</td><td>310</td><td>01FE23BCS065</td></tr>
+<tr><td>4</td><td>Sudarshan Naik</td><td>Team Member</td><td>336</td><td>01FE23BCS221</td></tr>
+</table></div>
+
+<h2>Lead Developer</h2>
+<div class="dev">
+  <div class="dev-avatar">KK</div>
+  <div>
+    <div class="dev-role">Lead Developer · 01FE23BCS106</div>
+    <div class="dev-name">Kushal Koujalagi</div>
+    <p>Final-year B.E. Computer Science and Engineering student at KLE Technological University, Hubballi.</p>
+    <div class="dev-links"><a href="https://github.com/kushalkou">GitHub · kushalkou</a></div>
+  </div>
+</div>
+<h3>Contributions</h3>
+<div class="tbl"><table>
+<tr><th style="width:30%">Area</th><th>Work</th></tr>
+<tr><td>Protocol design</td><td>Threat model, rotating HMAC token scheme, device-bound signed scans, nine-step verification order, key hierarchy</td></tr>
+<tr><td>Cryptography core</td><td>HKDF key derivation, QR token mint / verify, ECDSA verification (raw → DER), SHA-256 hash chain, Ed25519 report signing</td></tr>
+<tr><td>Backend</td><td>FastAPI application, SQLite schema, Argon2id authentication, session handling, lockout, RBAC, security headers</td></tr>
+<tr><td>Frontend</td><td>Faculty live-QR screen, student scanner with WebCrypto device keys, admin integrity panel, public report verifier</td></tr>
+<tr><td>Security testing</td><td>Automated red-team suite (12 attacks), pytest unit and end-to-end tests</td></tr>
+<tr><td>Deployment &amp; docs</td><td>One-command setup with TLS, README, slides and this project site</td></tr>
 </table></div>
 
 <h2>Course</h2>
@@ -49,7 +70,7 @@
 
 
 </main>
-<footer>Secure QR-Based Attendance System · Cryptography &amp; Network Security · KLE Technological University, Hubballi · <a href="https://github.com/kushalkou/cns-qr-attendance">Source on GitHub</a></footer>
+<footer>Designed &amp; built by <a href="https://github.com/kushalkou"><b>Kushal Koujalagi</b></a> · Secure QR-Based Attendance System · Cryptography &amp; Network Security, KLE Technological University · <a href="https://github.com/kushalkou/cns-qr-attendance">Source on GitHub</a></footer>
 <script src="assets/site.js"></script>
 </body>
 </html>
