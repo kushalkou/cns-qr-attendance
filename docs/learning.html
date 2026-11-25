@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Learning · Secure QR Attendance</title>
+<meta name="description" content="Secure QR-Based Attendance System: a Cryptography & Network Security course project, KLE Technological University.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231f2933'/><path d='M8 8h6v6H8zM18 8h6v6h-6zM8 18h6v6H8zM18 18h2v2h-2zM22 22h2v2h-2zM18 22h2v2h-2zM22 18h2v2h-2z' fill='white'/></svg>">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<nav class="nav" aria-label="Main">
+  <div class="in">
+    <a class="brand" href="index.html"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#fff"/><path d="M8 8h6v6H8zM18 8h6v6h-6zM8 18h6v6H8zM18 18h2v2h-2zM22 22h2v2h-2zM18 22h2v2h-2zM22 18h2v2h-2z" fill="#1f2933"/></svg>Secure QR Attendance</a>
+    <button class="burger" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <ul class="menu">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li class="active"><a href="learning.html">Learning</a></li>
+      <li class="has-sub"><button aria-expanded="false">Course Project <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2.5 4.5 6 8l3.5-3.5"/></svg></button><ul class="sub"><li><a href="problem-statement.html">Problem Statement</a></li><li><a href="objectives.html">Objectives</a></li><li><a href="motivation.html">Motivation</a></li><li><a href="architecture.html">System Architecture</a></li><li><a href="requirements.html">Requirements and Threat Model</a></li><li><a href="workflow.html">Attendance Flow</a></li><li><a href="implementation.html">Implementation and Testing</a></li><li><a href="attacks.html">Attacks and Security Analysis</a></li><li><a href="conclusion.html">Conclusion</a></li></ul></li>
+      <li><a href="report.html">Report</a></li>
+    </ul>
+  </div>
+</nav>
+<header class="banner"><h1>Learning</h1></header>
+<main>
+
+<h2>Learning Outcomes</h2>
+<p>Through the Secure QR-Based Attendance System project, we gained practical experience in applying cryptographic primitives to a working client–server system and in testing it against realistic attacks.</p>
+<ul class="points">
+<li><b>Message authentication</b>: Used HMAC-SHA256 to make QR tokens that only the server can produce, and learned why a plain hash is not enough when the attacker knows the input format.</li>
+<li><b>Key derivation</b>: Used HKDF-SHA256 to derive independent per-session and key-wrapping keys from one master key, so a leaked derived key exposes nothing else.</li>
+<li><b>Digital signatures</b>: Used ECDSA P-256 in the browser for device binding and Ed25519 on the server for reports, and compared why each fits its place (browser support versus deterministic, misuse-resistant signing).</li>
+<li><b>Freshness and replay protection</b>: Combined time windows, signed timestamps and single-use nonces, and saw how each one alone leaves a gap.</li>
+<li><b>Tamper evidence</b>: Built a SHA-256 hash chain over attendance records and anchored its head inside signed reports, so even an attacker who recomputes the chain is detected.</li>
+<li><b>Secure password storage</b>: Stored passwords with salted, memory-hard Argon2id and added account lockout against online guessing.</li>
+<li><b>Web security</b>: Configured TLS, HttpOnly/Secure/SameSite cookies, a strict Content Security Policy and role-based access control, and understood which attack each one stops.</li>
+<li><b>Web Crypto API</b>: Generated non-extractable keys on the phone, stored them in IndexedDB and converted signatures between the raw (r‖s) and DER formats.</li>
+<li><b>Security testing</b>: Wrote an automated red-team script that replays, forges, proxies, brute-forces and tampers with the live system, and wrote a threat model stating honestly what the system does not protect against.</li>
+</ul>
+
+
+</main>
+<footer>Secure QR-Based Attendance System · Cryptography &amp; Network Security · KLE Technological University, Hubballi · <a href="https://github.com/kushalkou/cns-qr-attendance">Source on GitHub</a></footer>
+<script src="assets/site.js"></script>
+</body>
+</html>

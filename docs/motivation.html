@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Motivation · Secure QR Attendance</title>
+<meta name="description" content="Secure QR-Based Attendance System: a Cryptography & Network Security course project, KLE Technological University.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231f2933'/><path d='M8 8h6v6H8zM18 8h6v6h-6zM8 18h6v6H8zM18 18h2v2h-2zM22 22h2v2h-2zM18 22h2v2h-2zM22 18h2v2h-2z' fill='white'/></svg>">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<nav class="nav" aria-label="Main">
+  <div class="in">
+    <a class="brand" href="index.html"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#fff"/><path d="M8 8h6v6H8zM18 8h6v6h-6zM8 18h6v6H8zM18 18h2v2h-2zM22 22h2v2h-2zM18 22h2v2h-2zM22 18h2v2h-2z" fill="#1f2933"/></svg>Secure QR Attendance</a>
+    <button class="burger" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <ul class="menu">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="learning.html">Learning</a></li>
+      <li class="has-sub active"><button aria-expanded="false">Course Project <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2.5 4.5 6 8l3.5-3.5"/></svg></button><ul class="sub"><li><a href="problem-statement.html">Problem Statement</a></li><li><a href="objectives.html">Objectives</a></li><li><a href="motivation.html" class="current">Motivation</a></li><li><a href="architecture.html">System Architecture</a></li><li><a href="requirements.html">Requirements and Threat Model</a></li><li><a href="workflow.html">Attendance Flow</a></li><li><a href="implementation.html">Implementation and Testing</a></li><li><a href="attacks.html">Attacks and Security Analysis</a></li><li><a href="conclusion.html">Conclusion</a></li></ul></li>
+      <li><a href="report.html">Report</a></li>
+    </ul>
+  </div>
+</nav>
+<header class="banner"><h1>Motivation</h1></header>
+<main>
+
+<h2>Why This Project</h2>
+<p>Every student has seen proxy attendance happen, and many QR attendance systems already used in colleges are easy to beat: the code is static, or a screenshot works for the whole lecture. That made attendance a good real-world setting for the course material, because each attack maps directly onto a cryptographic concept.</p>
+
+<h3>Mapping attacks to course concepts</h3>
+<div class="tbl"><table>
+<tr><th style="width:36%">Everyday cheating method</th><th style="width:30%">Security property</th><th>Course concept used</th></tr>
+<tr><td>Screenshot of the QR sent on WhatsApp</td><td>Freshness</td><td>Time-windowed MAC (HMAC)</td></tr>
+<tr><td>Making a QR for the next slot</td><td>Authenticity</td><td>Keyed MAC, secret key</td></tr>
+<tr><td>Logging in as a friend</td><td>Entity authentication</td><td>Digital signatures (ECDSA)</td></tr>
+<tr><td>Resending a captured request</td><td>Replay protection</td><td>Nonces and timestamps</td></tr>
+<tr><td>Changing records later</td><td>Integrity</td><td>Hash chains (SHA-256)</td></tr>
+<tr><td>Denying or forging a report</td><td>Non-repudiation</td><td>Digital signatures (Ed25519)</td></tr>
+<tr><td>Guessing passwords</td><td>Confidentiality of credentials</td><td>Password hashing (Argon2id)</td></tr>
+</table></div>
+
+<h3>Design principle</h3>
+<p>Use only standard, well-studied primitives from established libraries, and put the effort into the <b>protocol</b>: what is signed, what is checked, in which order, and what is logged. No custom cryptography.</p>
+
+<div class="pager"><a href="objectives.html"><span>Previous</span>Objectives</a><a class="next" href="architecture.html"><span>Next</span>System Architecture</a></div>
+</main>
+<footer>Secure QR-Based Attendance System · Cryptography &amp; Network Security · KLE Technological University, Hubballi · <a href="https://github.com/kushalkou/cns-qr-attendance">Source on GitHub</a></footer>
+<script src="assets/site.js"></script>
+</body>
+</html>

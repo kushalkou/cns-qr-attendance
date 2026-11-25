@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Report · Secure QR Attendance</title>
+<meta name="description" content="Secure QR-Based Attendance System: a Cryptography & Network Security course project, KLE Technological University.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231f2933'/><path d='M8 8h6v6H8zM18 8h6v6h-6zM8 18h6v6H8zM18 18h2v2h-2zM22 22h2v2h-2zM18 22h2v2h-2zM22 18h2v2h-2z' fill='white'/></svg>">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<nav class="nav" aria-label="Main">
+  <div class="in">
+    <a class="brand" href="index.html"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#fff"/><path d="M8 8h6v6H8zM18 8h6v6h-6zM8 18h6v6H8zM18 18h2v2h-2zM22 22h2v2h-2zM18 22h2v2h-2zM22 18h2v2h-2z" fill="#1f2933"/></svg>Secure QR Attendance</a>
+    <button class="burger" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <ul class="menu">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="learning.html">Learning</a></li>
+      <li class="has-sub"><button aria-expanded="false">Course Project <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2.5 4.5 6 8l3.5-3.5"/></svg></button><ul class="sub"><li><a href="problem-statement.html">Problem Statement</a></li><li><a href="objectives.html">Objectives</a></li><li><a href="motivation.html">Motivation</a></li><li><a href="architecture.html">System Architecture</a></li><li><a href="requirements.html">Requirements and Threat Model</a></li><li><a href="workflow.html">Attendance Flow</a></li><li><a href="implementation.html">Implementation and Testing</a></li><li><a href="attacks.html">Attacks and Security Analysis</a></li><li><a href="conclusion.html">Conclusion</a></li></ul></li>
+      <li class="active"><a href="report.html">Report</a></li>
+    </ul>
+  </div>
+</nav>
+<header class="banner"><h1>Report</h1></header>
+<main>
+
+<h2>Project Deliverables</h2>
+<div class="tbl"><table>
+<tr><th style="width:30%">Item</th><th>Description</th><th style="width:18%">Link</th></tr>
+<tr><td>Source code</td><td>Complete application, tests, attack suite and run script</td><td><a href="https://github.com/kushalkou/cns-qr-attendance">GitHub</a></td></tr>
+<tr><td>Presentation</td><td>Project slides used in the review</td><td><a href="CNS_presentation.pptx" download>Download</a></td></tr>
+<tr><td>README</td><td>Setup, security mechanisms, attack results, threat model</td><td><a href="https://github.com/kushalkou/cns-qr-attendance#readme">View</a></td></tr>
+<tr><td>Report verifier</td><td>Offline Ed25519 verification of any session report</td><td><a href="https://github.com/kushalkou/cns-qr-attendance/blob/main/scripts/verify_report.py">Code</a></td></tr>
+</table></div>
+
+<h2>Summary</h2>
+<div class="tbl"><table>
+<tr><th style="width:30%">Title</th><td>Secure QR-Based Attendance System</td></tr>
+<tr><th>Course</th><td>Cryptography &amp; Network Security</td></tr>
+<tr><th>Primitives</th><td>HMAC-SHA256, HKDF-SHA256, ECDSA P-256, SHA-256 hash chain, Ed25519, Argon2id, TLS</td></tr>
+<tr><th>Stack</th><td>Python, FastAPI, SQLite, Jinja2, JavaScript, Web Crypto API</td></tr>
+<tr><th>Testing</th><td>7 / 7 automated tests passing; 12 / 12 live attacks blocked or detected</td></tr>
+</table></div>
+
+
+</main>
+<footer>Secure QR-Based Attendance System · Cryptography &amp; Network Security · KLE Technological University, Hubballi · <a href="https://github.com/kushalkou/cns-qr-attendance">Source on GitHub</a></footer>
+<script src="assets/site.js"></script>
+</body>
+</html>

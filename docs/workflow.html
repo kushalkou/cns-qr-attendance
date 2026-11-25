@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Attendance Flow · Secure QR Attendance</title>
+<meta name="description" content="Secure QR-Based Attendance System: a Cryptography & Network Security course project, KLE Technological University.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231f2933'/><path d='M8 8h6v6H8zM18 8h6v6h-6zM8 18h6v6H8zM18 18h2v2h-2zM22 22h2v2h-2zM18 22h2v2h-2zM22 18h2v2h-2z' fill='white'/></svg>">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<nav class="nav" aria-label="Main">
+  <div class="in">
+    <a class="brand" href="index.html"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#fff"/><path d="M8 8h6v6H8zM18 8h6v6h-6zM8 18h6v6H8zM18 18h2v2h-2zM22 22h2v2h-2zM18 22h2v2h-2zM22 18h2v2h-2z" fill="#1f2933"/></svg>Secure QR Attendance</a>
+    <button class="burger" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <ul class="menu">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="learning.html">Learning</a></li>
+      <li class="has-sub active"><button aria-expanded="false">Course Project <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2.5 4.5 6 8l3.5-3.5"/></svg></button><ul class="sub"><li><a href="problem-statement.html">Problem Statement</a></li><li><a href="objectives.html">Objectives</a></li><li><a href="motivation.html">Motivation</a></li><li><a href="architecture.html">System Architecture</a></li><li><a href="requirements.html">Requirements and Threat Model</a></li><li><a href="workflow.html" class="current">Attendance Flow</a></li><li><a href="implementation.html">Implementation and Testing</a></li><li><a href="attacks.html">Attacks and Security Analysis</a></li><li><a href="conclusion.html">Conclusion</a></li></ul></li>
+      <li><a href="report.html">Report</a></li>
+    </ul>
+  </div>
+</nav>
+<header class="banner"><h1>Attendance Flow</h1></header>
+<main>
+<ul class="toc"><li><a href="#flow">5.1 Attendance flow: faculty → student → server</a></li><li><a href="#token">5.2 QR token format</a></li><li><a href="#scan">5.3 Signed scan request</a></li><li><a href="#checks">5.4 Verification order</a></li><li><a href="#record">5.5 Chain record and report</a></li></ul>
+<h2 id="flow">5.1 Attendance Flow: Faculty → Student → Server</h2>
+<div class="tbl"><table>
+<tr><th style="width:9%">Step</th><th style="width:25%">Stage</th><th>What happens</th></tr>
+<tr><td>1</td><td>Login</td><td>Users log in; passwords checked against Argon2id hashes; session cookie issued.</td></tr>
+<tr><td>2</td><td>Device registration</td><td>Once per student: phone generates an ECDSA P-256 key pair; public key sent to the server and bound to the account.</td></tr>
+<tr><td>3</td><td>Start session</td><td>Faculty starts a class; server creates a random session ID and derives its HMAC key with HKDF.</td></tr>
+<tr><td>4</td><td>Rotating QR</td><td>Every 10 s the QR shows <code>session_id.window.tag</code>, where the tag is an HMAC of the session and window.</td></tr>
+<tr><td>5</td><td>Scan &amp; sign</td><td>Phone reads the QR and signs <code>token | user_id | timestamp | nonce</code> with its private key.</td></tr>
+<tr><td>6</td><td>Verify</td><td>Server runs nine checks in order and rejects at the first failure (logged with the reason).</td></tr>
+<tr><td>7</td><td>Record</td><td>Accepted scan is appended to the SHA-256 hash chain.</td></tr>
+<tr><td>8</td><td>Close &amp; sign</td><td>Faculty closes the session; server builds the present / absent report, pins the chain head and signs it with Ed25519.</td></tr>
+</table></div>
+
+<h2 id="token">5.2 QR Token Format</h2>
+<div class="tbl"><table class="packet">
+<tr><th>session_id</th><th>window</th><th>tag</th></tr>
+<tr><td>8 hex chars, random per class</td><td>⌊unix_time / 10⌋</td><td>HMAC-SHA256(K_session, session_id ‖ window), first 16 bytes, base64url</td></tr>
+</table></div>
+<p><b>Example:</b> <code>8308bb93.179562491.i7obqhSNLAU_5sCEG_cVog</code>. The server accepts the current window and the one before it, so a token is valid for at most 20 seconds.</p>
+
+<h2 id="scan">5.3 Signed Scan Request</h2>
+<div class="tbl"><table class="packet">
+<tr><th>token</th><th>ts</th><th>nonce</th><th>sig</th></tr>
+<tr><td>QR content as read</td><td>phone time (s)</td><td>144 random bits, base64url</td><td>ECDSA P-256 / SHA-256 over token | user_id | ts | nonce</td></tr>
+</table></div>
+<p>The user ID comes from the login session, not from the request body, so a student cannot claim to be someone else. The phone's private key never leaves the browser; WebCrypto creates it with <code>extractable: false</code>.</p>
+
+<h2 id="checks">5.4 Verification Order</h2>
+<div class="tbl"><table>
+<tr><th style="width:9%">#</th><th style="width:30%">Check</th><th>Rejection reason shown</th></tr>
+<tr><td>1</td><td>Network allowed (optional)</td><td>Not on the classroom network</td></tr>
+<tr><td>2</td><td>HMAC tag valid</td><td>forged token (bad HMAC)</td></tr>
+<tr><td>3</td><td>Window fresh</td><td>expired token (replay) / token from the future</td></tr>
+<tr><td>4</td><td>Session open</td><td>Session is not open</td></tr>
+<tr><td>5</td><td>Student enrolled</td><td>Not enrolled in this course</td></tr>
+<tr><td>6</td><td>Device registered</td><td>No device registered for this account</td></tr>
+<tr><td>7</td><td>Timestamp within 60 s</td><td>Device clock / signature too old</td></tr>
+<tr><td>8</td><td>ECDSA signature by bound key</td><td>Signature does not match registered device</td></tr>
+<tr><td>9</td><td>Nonce unused</td><td>Replayed request (nonce already used)</td></tr>
+<tr><td>✓</td><td>Append to chain (unique per student per class)</td><td>Already marked present for this class</td></tr>
+</table></div>
+
+<h2 id="record">5.5 Chain Record and Signed Report</h2>
+<div class="tbl"><table class="packet">
+<tr><th>id</th><th>session_id</th><th>student_id</th><th>ts</th><th>method</th><th>actor_id</th><th>note</th><th>prev_hash</th><th>hash</th></tr>
+<tr><td>sequence</td><td>class</td><td>who</td><td>when</td><td>qr / manual</td><td>who caused it</td><td>override reason</td><td>h_(i-1)</td><td>SHA-256(h_(i-1) ‖ JSON)</td></tr>
+</table></div>
+<p><b>Report:</b> course, faculty, start / close times, present list (with record IDs and hashes), absent list, counts, <code>chain_head</code> and <code>chain_head_id</code>, all signed with Ed25519 over canonical JSON (sorted keys, no spaces).</p>
+
+<div class="pager"><a href="requirements.html"><span>Previous</span>Requirements and Threat Model</a><a class="next" href="implementation.html"><span>Next</span>Implementation and Testing</a></div>
+</main>
+<footer>Secure QR-Based Attendance System · Cryptography &amp; Network Security · KLE Technological University, Hubballi · <a href="https://github.com/kushalkou/cns-qr-attendance">Source on GitHub</a></footer>
+<script src="assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Requirements and Threat Model · Secure QR Attendance</title>
+<meta name="description" content="Secure QR-Based Attendance System: a Cryptography & Network Security course project, KLE Technological University.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231f2933'/><path d='M8 8h6v6H8zM18 8h6v6h-6zM8 18h6v6H8zM18 18h2v2h-2zM22 22h2v2h-2zM18 22h2v2h-2zM22 18h2v2h-2z' fill='white'/></svg>">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<nav class="nav" aria-label="Main">
+  <div class="in">
+    <a class="brand" href="index.html"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#fff"/><path d="M8 8h6v6H8zM18 8h6v6h-6zM8 18h6v6H8zM18 18h2v2h-2zM22 22h2v2h-2zM18 22h2v2h-2zM22 18h2v2h-2z" fill="#1f2933"/></svg>Secure QR Attendance</a>
+    <button class="burger" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <ul class="menu">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="learning.html">Learning</a></li>
+      <li class="has-sub active"><button aria-expanded="false">Course Project <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2.5 4.5 6 8l3.5-3.5"/></svg></button><ul class="sub"><li><a href="problem-statement.html">Problem Statement</a></li><li><a href="objectives.html">Objectives</a></li><li><a href="motivation.html">Motivation</a></li><li><a href="architecture.html">System Architecture</a></li><li><a href="requirements.html" class="current">Requirements and Threat Model</a></li><li><a href="workflow.html">Attendance Flow</a></li><li><a href="implementation.html">Implementation and Testing</a></li><li><a href="attacks.html">Attacks and Security Analysis</a></li><li><a href="conclusion.html">Conclusion</a></li></ul></li>
+      <li><a href="report.html">Report</a></li>
+    </ul>
+  </div>
+</nav>
+<header class="banner"><h1>Requirements and Threat Model</h1></header>
+<main>
+<ul class="toc"><li><a href="#functional">4.1 Functional requirements</a></li><li><a href="#nonfunctional">4.2 Non-functional requirements</a></li><li><a href="#threat">4.3 Threat model</a></li><li><a href="#assumptions">4.4 Assumptions</a></li></ul>
+<h2 id="functional">4.1 Functional Requirements</h2>
+<div class="tbl"><table>
+<tr><th style="width:10%">ID</th><th style="width:16%">Role</th><th>Requirement</th></tr>
+<tr><td>FR1</td><td>All</td><td>Log in with username / USN and password; log out.</td></tr>
+<tr><td>FR2</td><td>Student</td><td>Sign up, register one phone, scan the class QR, view own attendance percentage per course.</td></tr>
+<tr><td>FR3</td><td>Faculty</td><td>Start a session, display the rotating QR, see present and rejected scans live.</td></tr>
+<tr><td>FR4</td><td>Faculty</td><td>Mark a student present manually with a mandatory reason (logged).</td></tr>
+<tr><td>FR5</td><td>Faculty</td><td>Close a session and download the signed report; view defaulters (&lt; 75%).</td></tr>
+<tr><td>FR6</td><td>Admin</td><td>Verify the attendance chain, reset device bindings, unlock accounts, add faculty, view the security log.</td></tr>
+<tr><td>FR7</td><td>Anyone</td><td>Verify a downloaded report against the public key.</td></tr>
+</table></div>
+
+<h2 id="nonfunctional">4.2 Non-Functional Requirements</h2>
+<ul class="points">
+<li><b>Security</b>: confidentiality of credentials, integrity of records, authenticity of scans, non-repudiation of reports.</li>
+<li><b>Usability</b>: a scan should take only a few seconds; works in a phone browser with no app install.</li>
+<li><b>Performance</b>: QR refresh every second on the faculty screen; scan verification in milliseconds.</li>
+<li><b>Portability</b>: runs on a laptop with one command (<code>./run.sh</code>); phones connect over Wi-Fi or a hotspot.</li>
+<li><b>Auditability</b>: every security-relevant event is recorded with time, user and IP.</li>
+</ul>
+
+<h2 id="threat">4.3 Threat Model</h2>
+<h3>Assets</h3>
+<p>Attendance records, session reports, user credentials, the master key and the report signing key.</p>
+<h3>Adversaries</h3>
+<div class="tbl"><table>
+<tr><th style="width:26%">Adversary</th><th style="width:36%">Capabilities</th><th>Goal</th></tr>
+<tr><td>Absent student</td><td>Receives photos / messages from friends in class, knows own password</td><td>Get marked present remotely</td></tr>
+<tr><td>Helping friend</td><td>In class, has own phone, may know the absent student's password</td><td>Mark the absent student present</td></tr>
+<tr><td>Network attacker</td><td>Can capture and resend requests on the same network</td><td>Replay or modify scans</td></tr>
+<tr><td>Curious student</td><td>Knows the QR format, can call APIs directly</td><td>Forge tokens, access faculty / admin functions</td></tr>
+<tr><td>Insider with DB access</td><td>Can read and edit the SQLite file</td><td>Change records without being detected</td></tr>
+<tr><td>Password guesser</td><td>Online login attempts</td><td>Take over an account</td></tr>
+</table></div>
+
+<h2 id="assumptions">4.4 Assumptions</h2>
+<ul class="points">
+<li>The server and its <code>.env</code> master key are not compromised.</li>
+<li>Students do not hand their own unlocked phone to someone else (no QR scheme can detect this).</li>
+<li>Each student registers their phone before a friend can (see the security analysis for this limitation and its fix).</li>
+<li>Phone and server clocks agree within 60 seconds.</li>
+</ul>
+
+<div class="pager"><a href="architecture.html"><span>Previous</span>System Architecture</a><a class="next" href="workflow.html"><span>Next</span>Attendance Flow</a></div>
+</main>
+<footer>Secure QR-Based Attendance System · Cryptography &amp; Network Security · KLE Technological University, Hubballi · <a href="https://github.com/kushalkou/cns-qr-attendance">Source on GitHub</a></footer>
+<script src="assets/site.js"></script>
+</body>
+</html>

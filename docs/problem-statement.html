@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Problem Statement · Secure QR Attendance</title>
+<meta name="description" content="Secure QR-Based Attendance System: a Cryptography & Network Security course project, KLE Technological University.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231f2933'/><path d='M8 8h6v6H8zM18 8h6v6h-6zM8 18h6v6H8zM18 18h2v2h-2zM22 22h2v2h-2zM18 22h2v2h-2zM22 18h2v2h-2z' fill='white'/></svg>">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<nav class="nav" aria-label="Main">
+  <div class="in">
+    <a class="brand" href="index.html"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#fff"/><path d="M8 8h6v6H8zM18 8h6v6h-6zM8 18h6v6H8zM18 18h2v2h-2zM22 22h2v2h-2zM18 22h2v2h-2zM22 18h2v2h-2z" fill="#1f2933"/></svg>Secure QR Attendance</a>
+    <button class="burger" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <ul class="menu">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="learning.html">Learning</a></li>
+      <li class="has-sub active"><button aria-expanded="false">Course Project <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2.5 4.5 6 8l3.5-3.5"/></svg></button><ul class="sub"><li><a href="problem-statement.html" class="current">Problem Statement</a></li><li><a href="objectives.html">Objectives</a></li><li><a href="motivation.html">Motivation</a></li><li><a href="architecture.html">System Architecture</a></li><li><a href="requirements.html">Requirements and Threat Model</a></li><li><a href="workflow.html">Attendance Flow</a></li><li><a href="implementation.html">Implementation and Testing</a></li><li><a href="attacks.html">Attacks and Security Analysis</a></li><li><a href="conclusion.html">Conclusion</a></li></ul></li>
+      <li><a href="report.html">Report</a></li>
+    </ul>
+  </div>
+</nav>
+<header class="banner"><h1>Problem Statement</h1></header>
+<main>
+<ul class="toc"><li><a href="#ps">1.1 Problem statement</a></li><li><a href="#response">1.2 Our project response</a></li></ul>
+<h2 id="ps">1.1 Problem Statement</h2>
+<h3>Why secure attendance matters</h3>
+<ul class="points">
+<li>Attendance decides exam eligibility, so a wrong record has real consequences for students and for the institution.</li>
+<li>Manual roll call takes several minutes of every class and is easy to fake: a friend answers for an absent student, or a name is added to the sheet later.</li>
+<li>A plain, fixed QR code makes things faster but not safer. It can be photographed and forwarded, scanned from anywhere, and reused in later classes.</li>
+<li>Records kept in a spreadsheet or database can be edited afterwards by anyone with access, and nobody can tell.</li>
+</ul>
+<h3>Formal statement</h3>
+<p>Design and implement an attendance system in which <b>only a student who is physically present, using their own registered device,</b> can mark attendance for the current class, in which <b>every record is tamper-evident</b>, and in which the <b>final attendance report can be verified</b> by a third party without trusting the database.</p>
+
+<h2 id="response">1.2 Our Project Response</h2>
+<div class="tbl"><table>
+<tr><th style="width:34%">Problem</th><th>How the system addresses it</th></tr>
+<tr><td>Forwarded or old QR codes</td><td>QR changes every 10 s and is authenticated with HMAC-SHA256; tokens older than one window are rejected.</td></tr>
+<tr><td>Proxy using a friend's password</td><td>Each account is bound to one phone's ECDSA key; every scan must carry that phone's signature.</td></tr>
+<tr><td>Captured requests sent again</td><td>Signed timestamp (±60 s) and a single-use nonce per scan.</td></tr>
+<tr><td>Editing records afterwards</td><td>SHA-256 hash chain over all records; the admin integrity check pinpoints the edited record.</td></tr>
+<tr><td>Disputed or forged reports</td><td>Ed25519-signed session reports that pin the chain head; verifiable offline with the public key.</td></tr>
+<tr><td>Stolen passwords / database leak</td><td>Argon2id password hashes, hashed session tokens, account lockout.</td></tr>
+</table></div>
+
+<div class="pager"><a class="next" href="objectives.html"><span>Next</span>Objectives</a></div>
+</main>
+<footer>Secure QR-Based Attendance System · Cryptography &amp; Network Security · KLE Technological University, Hubballi · <a href="https://github.com/kushalkou/cns-qr-attendance">Source on GitHub</a></footer>
+<script src="assets/site.js"></script>
+</body>
+</html>

@@ -3,411 +3,52 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SecureAttend · Secure QR-Based Attendance System</title>
-<meta name="description" content="A QR attendance system that stops proxy marking with rotating HMAC tokens, device-bound signatures, a tamper-evident hash chain and Ed25519-signed reports.">
-<meta property="og:title" content="SecureAttend · Secure QR-Based Attendance System">
-<meta property="og:description" content="Attendance you can't fake. A Cryptography & Network Security project.">
-<meta property="og:image" content="assets/session.webp">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23141414'/><path d='M8 8h6v6H8zM18 8h6v6h-6zM8 18h6v6H8zM18 18h2v2h-2zM22 22h2v2h-2zM18 22h2v2h-2zM22 18h2v2h-2z' fill='%23fbfaf7'/></svg>">
-<style>
-  :root {
-    --paper: #fbfaf7; --ink: #141414; --soft: #55534e; --faint: #8b8880;
-    --line: #e7e4dc; --card: #ffffff; --accent: #2747d6; --accent-soft: #eef1fd;
-    --ok: #137a45; --bad: #b42318;
-    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
-    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", sans-serif;
-    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
-  }
-  * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.65 var(--sans); -webkit-font-smoothing: antialiased; }
-  a { color: inherit; }
-  img { max-width: 100%; height: auto; display: block; }
-  .grid > *, .attacks > *, .run > *, .two > *, .gallery > *, .head > *, .steps > * { min-width: 0; }
-  code, .mono { font-family: var(--mono); font-size: .88em; }
-  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
-
-  /* nav */
-  nav { position: sticky; top: 0; z-index: 10; background: rgba(251,250,247,.88); backdrop-filter: blur(10px); border-bottom: 1px solid transparent; transition: border-color .2s; }
-  nav.scrolled { border-color: var(--line); }
-  nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
-  .logo { display: flex; align-items: center; gap: 10px; font-weight: 650; text-decoration: none; letter-spacing: -.01em; }
-  .logo svg { width: 22px; height: 22px; }
-  .links { display: flex; gap: 28px; font-size: 15px; }
-  .links a { text-decoration: none; color: var(--soft); }
-  .links a:hover { color: var(--ink); }
-  .gh { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); font-size: 14px; text-decoration: none; }
-  .gh:hover { border-color: var(--ink); }
-  .gh svg { width: 16px; height: 16px; }
-  @media (max-width: 760px) { .links { display: none; } }
-
-  /* hero */
-  .hero { padding: 88px 0 40px; }
-  .eyebrow { font: 600 12px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin-bottom: 22px; }
-  h1, h2, h3 { font-family: var(--serif); font-weight: 600; letter-spacing: -.015em; margin: 0; }
-  h1 { font-size: clamp(44px, 7vw, 76px); line-height: 1.02; max-width: 14ch; }
-  .lede { font-size: 20px; color: var(--soft); max-width: 58ch; margin: 26px 0 34px; }
-  .cta { display: flex; gap: 12px; flex-wrap: wrap; }
-  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 10px; font-size: 15px; font-weight: 550; text-decoration: none; border: 1px solid var(--ink); }
-  .btn.dark { background: var(--ink); color: var(--paper); }
-  .btn.dark:hover { background: #2b2b2b; }
-  .btn.light:hover { background: var(--card); }
-  .stats { display: flex; gap: 44px; flex-wrap: wrap; margin-top: 56px; padding-top: 28px; border-top: 1px solid var(--line); }
-  .stat b { display: block; font: 600 30px/1 var(--serif); }
-  .stat span { font-size: 14px; color: var(--faint); }
-  @media (max-width: 600px) { .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; } }
-
-  /* showcase */
-  .showcase { position: relative; margin: 36px 0 0; padding-bottom: 40px; }
-  .browser { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--card); box-shadow: 0 30px 60px -30px rgba(20,20,20,.25), 0 2px 6px rgba(20,20,20,.04); }
-  .browser .bar { height: 34px; display: flex; align-items: center; gap: 7px; padding: 0 14px; border-bottom: 1px solid var(--line); background: #f4f2ed; }
-  .browser .bar i { width: 10px; height: 10px; border-radius: 50%; background: #dad6cc; }
-  .browser .bar span { margin-left: 14px; font: 12px var(--mono); color: var(--faint); }
-  .phone { position: absolute; right: -12px; bottom: 0; width: 23%; min-width: 150px; border: 8px solid var(--ink); border-radius: 30px; overflow: hidden; background: var(--ink); box-shadow: 0 30px 60px -20px rgba(20,20,20,.4); }
-  .phone img { border-radius: 22px; }
-  @media (max-width: 760px) { .phone { position: relative; right: auto; width: 60%; margin: -60px auto 0; } }
-
-  /* sections */
-  section { padding: 96px 0; }
-  section + section { border-top: 1px solid var(--line); }
-  .head { display: grid; grid-template-columns: 1fr 1.4fr; gap: 48px; margin-bottom: 52px; align-items: end; }
-  .head h2 { font-size: clamp(32px, 4.4vw, 46px); line-height: 1.08; }
-  .head p { margin: 0; color: var(--soft); font-size: 18px; }
-  .num { font: 500 13px var(--mono); color: var(--accent); display: block; margin-bottom: 14px; }
-  @media (max-width: 760px) { .head { grid-template-columns: 1fr; gap: 16px; } }
-
-  /* problem */
-  .problem { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
-  .problem div { background: var(--card); padding: 28px; }
-  .problem h3 { font-size: 21px; margin-bottom: 8px; }
-  .problem p { margin: 0; color: var(--soft); font-size: 15.5px; }
-  @media (max-width: 760px) { .problem { grid-template-columns: 1fr; } }
-
-  /* steps */
-  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; counter-reset: s; }
-  .step { position: relative; padding-top: 22px; border-top: 2px solid var(--ink); }
-  .step::before { counter-increment: s; content: "0" counter(s); font: 500 13px var(--mono); color: var(--faint); }
-  .step h3 { font-size: 21px; margin: 10px 0 8px; }
-  .step p { margin: 0; font-size: 15.5px; color: var(--soft); }
-  @media (max-width: 860px) { .steps { grid-template-columns: 1fr 1fr; } }
-  @media (max-width: 520px) { .steps { grid-template-columns: 1fr; } }
-
-  .pipeline { margin-top: 56px; padding: 28px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); }
-  .pipeline .label { font-size: 13px; color: var(--faint); margin-bottom: 16px; }
-  .chips { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-  .chip { font: 13px var(--mono); padding: 6px 11px; border-radius: 8px; background: var(--paper); border: 1px solid var(--line); white-space: nowrap; }
-  .chip.end { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-  .arrow { color: var(--faint); font-size: 13px; }
-
-  /* crypto grid */
-  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 26px; display: flex; flex-direction: column; }
-  .card .tag { font: 600 11px var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
-  .card h3 { font-size: 23px; margin: 8px 0 10px; }
-  .card p { margin: 0 0 18px; color: var(--soft); font-size: 15.5px; flex: 1; }
-  .card pre { margin: 0; padding: 12px 14px; border-radius: 9px; background: var(--paper); border: 1px solid var(--line); font: 12.5px/1.6 var(--mono); white-space: pre-wrap; word-break: break-word; color: #333; }
-  .card.full { grid-column: 1 / -1; }
-  @media (max-width: 900px) { .grid { grid-template-columns: 1fr 1fr; } }
-  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
-
-  /* chain */
-  .chain { margin-top: 18px; overflow-x: auto; }
-  .chain svg { width: 100%; max-width: 860px; height: auto; display: block; margin: 0 auto; }
-  @media (max-width: 600px) { .chain svg { min-width: 560px; } }
-
-  /* attacks */
-  .attacks { display: grid; grid-template-columns: 1.15fr 1fr; gap: 28px; align-items: start; }
-  .term { background: #121212; color: #d8d6cf; border-radius: 14px; overflow: hidden; font: 13px/1.75 var(--mono); box-shadow: 0 30px 60px -30px rgba(0,0,0,.45); }
-  .term .bar { padding: 10px 16px; border-bottom: 1px solid #262626; color: #77756e; font-size: 12px; }
-  .term pre { margin: 0; padding: 18px 20px 20px; overflow-x: auto; }
-  .term .g { color: #5fd18b; } .term .d { color: #77756e; } .term .b { color: #fff; font-weight: 600; }
-  .side figure { margin: 0 0 22px; }
-  .side figcaption, .gallery figcaption { font-size: 14px; color: var(--faint); margin-top: 10px; }
-  .shot { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--card); }
-  @media (max-width: 900px) { .attacks { grid-template-columns: 1fr; } }
-
-  /* gallery */
-  .gallery { display: grid; grid-template-columns: 1fr 2.2fr; gap: 22px; align-items: start; }
-  .gallery figure { margin: 0; }
-  .gallery .stack { display: grid; gap: 22px; }
-  @media (max-width: 760px) { .gallery { grid-template-columns: 1fr; } }
-
-  /* stack + limits */
-  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
-  .two h3 { font-size: 24px; margin-bottom: 18px; }
-  dl { margin: 0; display: grid; grid-template-columns: 130px 1fr; row-gap: 12px; font-size: 15.5px; }
-  dt { color: var(--faint); }
-  dd { margin: 0; }
-  ul.limits { margin: 0; padding: 0; list-style: none; }
-  ul.limits li { padding: 14px 0; border-bottom: 1px solid var(--line); font-size: 15.5px; color: var(--soft); }
-  ul.limits li:first-child { padding-top: 0; }
-  ul.limits b { color: var(--ink); font-weight: 600; }
-  @media (max-width: 760px) { .two { grid-template-columns: 1fr; gap: 48px; } }
-
-  /* run */
-  .run { background: var(--ink); color: var(--paper); border-radius: 18px; padding: 52px; display: grid; grid-template-columns: 1fr 1.3fr; gap: 40px; align-items: center; }
-  .run h2 { font-size: 38px; }
-  .run p { color: #b9b6ad; margin: 14px 0 0; }
-  .run pre { margin: 0; background: #1e1e1e; border: 1px solid #2c2c2c; border-radius: 12px; padding: 22px; font: 14px/1.8 var(--mono); overflow-x: auto; color: #e9e7e0; }
-  .run .c { color: #77756e; }
-  @media (max-width: 860px) { .run { grid-template-columns: 1fr; padding: 32px; } }
-
-  footer { padding: 48px 0 64px; color: var(--faint); font-size: 14px; }
-  footer .wrap { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
-  footer a { color: var(--soft); }
-
-  .reveal { opacity: 0; transform: translateY(14px); transition: opacity .7s ease, transform .7s ease; }
-  .reveal.in { opacity: 1; transform: none; }
-  @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } html { scroll-behavior: auto; } }
-</style>
+<title>Home · Secure QR Attendance</title>
+<meta name="description" content="Secure QR-Based Attendance System: a Cryptography & Network Security course project, KLE Technological University.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231f2933'/><path d='M8 8h6v6H8zM18 8h6v6h-6zM8 18h6v6H8zM18 18h2v2h-2zM22 22h2v2h-2zM18 22h2v2h-2zM22 18h2v2h-2z' fill='white'/></svg>">
+<link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-
-<nav id="nav">
-  <div class="wrap">
-    <a class="logo" href="#top">
-      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#141414"/><path d="M8 8h6v6H8zM18 8h6v6h-6zM8 18h6v6H8zM18 18h2v2h-2zM22 22h2v2h-2zM18 22h2v2h-2zM22 18h2v2h-2z" fill="#fbfaf7"/></svg>
-      SecureAttend
-    </a>
-    <div class="links">
-      <a href="#how">How it works</a>
-      <a href="#crypto">Cryptography</a>
-      <a href="#attacks">Attacks</a>
-      <a href="#run">Run it</a>
-    </div>
-    <a class="gh" href="https://github.com/kushalkou/cns-qr-attendance">
-      <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-      Source
-    </a>
+<nav class="nav" aria-label="Main">
+  <div class="in">
+    <a class="brand" href="index.html"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#fff"/><path d="M8 8h6v6H8zM18 8h6v6h-6zM8 18h6v6H8zM18 18h2v2h-2zM22 22h2v2h-2zM18 22h2v2h-2zM22 18h2v2h-2z" fill="#1f2933"/></svg>Secure QR Attendance</a>
+    <button class="burger" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <ul class="menu">
+      <li class="active"><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="learning.html">Learning</a></li>
+      <li class="has-sub"><button aria-expanded="false">Course Project <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2.5 4.5 6 8l3.5-3.5"/></svg></button><ul class="sub"><li><a href="problem-statement.html">Problem Statement</a></li><li><a href="objectives.html">Objectives</a></li><li><a href="motivation.html">Motivation</a></li><li><a href="architecture.html">System Architecture</a></li><li><a href="requirements.html">Requirements and Threat Model</a></li><li><a href="workflow.html">Attendance Flow</a></li><li><a href="implementation.html">Implementation and Testing</a></li><li><a href="attacks.html">Attacks and Security Analysis</a></li><li><a href="conclusion.html">Conclusion</a></li></ul></li>
+      <li><a href="report.html">Report</a></li>
+    </ul>
   </div>
 </nav>
+<header class="banner home"><div class="kicker">Course Project</div><h1>Secure QR-Based Attendance System</h1></header>
+<main>
 
-<header class="hero" id="top">
-  <div class="wrap">
-    <div class="eyebrow">Cryptography &amp; Network Security · Course Project</div>
-    <h1>Attendance you can't fake.</h1>
-    <p class="lede">A QR attendance system where the code changes every ten seconds, every scan is signed by the student's own phone, and every record is chained so that edits show up. Proxy marking, screenshots, replays and database tampering are all caught.</p>
-    <div class="cta">
-      <a class="btn dark" href="https://github.com/kushalkou/cns-qr-attendance">View the code →</a>
-      <a class="btn light" href="#how">How it works</a>
-    </div>
-    <div class="stats">
-      <div class="stat"><b>10 s</b><span>QR rotation window</span></div>
-      <div class="stat"><b>6</b><span>cryptographic primitives</span></div>
-      <div class="stat"><b>12 / 12</b><span>live attacks blocked</span></div>
-      <div class="stat"><b>0</b><span>passwords stored</span></div>
-    </div>
+<div class="meta">
+  <div class="ps">Problem statement: Secure QR-Based Attendance Using Cryptographic Tokens and Tamper-Evident Records</div>
+  <div class="course">Cryptography &amp; Network Security</div>
+  <div class="dept">Department of Computer Science and Engineering<br>KLE Technological University, Hubballi<br><span style="font-weight:400;color:#8a9099">Academic Year 2026–27</span></div>
+</div>
 
-    <div class="showcase reveal">
-      <div class="browser">
-        <div class="bar"><i></i><i></i><i></i><span>Faculty · live session</span></div>
-        <img src="assets/session.webp" alt="Faculty screen showing the rotating QR code, students marked present with record hashes, and rejected proxy and forgery attempts" width="1600" height="1025">
-      </div>
-      <div class="phone"><img src="assets/student.webp" alt="Student phone view after a successful, device-signed scan" width="780" height="1688"></div>
-    </div>
-  </div>
-</header>
+<h2 style="margin-top:72px">Abstract</h2>
+<p class="lead">Attendance decides exam eligibility, yet in most classrooms it is still taken by hand, which is slow and easy to fake. A plain QR code does not fix this, because a photo of it can be forwarded in seconds.</p>
+<p>This project builds a web-based attendance system where the faculty screen shows a QR code that changes every ten seconds and is authenticated with <b>HMAC-SHA256</b>. Each student's phone holds a non-extractable <b>ECDSA P-256</b> key created with the Web Crypto API, and every scan is signed with it together with a timestamp and a single-use nonce. Accepted scans are appended to a <b>SHA-256 hash chain</b>, and each closed session produces a report signed with <b>Ed25519</b> that anyone can verify. Passwords are stored with <b>Argon2id</b>, keys are separated with <b>HKDF</b>, and all traffic runs over TLS. A red-team script runs twelve attacks against the live system; all are blocked.</p>
 
-<section id="problem">
-  <div class="wrap">
-    <div class="head reveal">
-      <div><span class="num">01 · The problem</span><h2>Roll call is slow, and easy to cheat.</h2></div>
-      <p>Attendance decides exam eligibility, yet it is still taken by hand. A plain QR code doesn't fix that: it can be photographed and shared in seconds. This system makes a QR code useless to anyone who isn't physically present with their own phone.</p>
-    </div>
-    <div class="problem reveal">
-      <div><h3>Proxy marking</h3><p>A friend logs in with an absent student's password. Here that fails: every scan must be signed by the absent student's own phone.</p></div>
-      <div><h3>Shared screenshots</h3><p>A photo of the QR code is forwarded to someone at home. It expires within 20 seconds and fails the time check.</p></div>
-      <div><h3>Edited records</h3><p>Someone with database access changes a row. The hash chain no longer matches, and the admin's integrity check points to that exact record.</p></div>
-    </div>
-  </div>
-</section>
+<figure><div class="frame"><img src="assets/session.webp" alt="Faculty live session screen" loading="lazy" width="1600" height="1025"></div><figcaption>Faculty screen during a live session: rotating QR, students marked present with record hashes, and rejected attempts.</figcaption></figure>
 
-<section id="how">
-  <div class="wrap">
-    <div class="head reveal">
-      <div><span class="num">02 · How it works</span><h2>Four steps, nine checks.</h2></div>
-      <p>From the classroom it looks like any QR system: show, scan, done. Behind each scan the server runs nine checks in order, and rejects the scan at the first one that fails.</p>
-    </div>
-    <div class="steps reveal">
-      <div class="step"><h3>Faculty starts a session</h3><p>The projector shows a QR code that changes every ten seconds, each one signed with HMAC.</p></div>
-      <div class="step"><h3>Student registers once</h3><p>The phone creates a key pair that can't be exported. The server keeps only the public half.</p></div>
-      <div class="step"><h3>Scan &amp; sign</h3><p>The phone signs the token, a timestamp and a single-use nonce with its private key.</p></div>
-      <div class="step"><h3>Verify &amp; chain</h3><p>Valid scans are added to a SHA-256 hash chain. Closing the session produces an Ed25519-signed report.</p></div>
-    </div>
-    <div class="pipeline reveal">
-      <div class="label">POST /api/scan: every scan passes through this, in order</div>
-      <div class="chips">
-        <span class="chip">network allowed</span><span class="arrow">→</span>
-        <span class="chip">HMAC valid</span><span class="arrow">→</span>
-        <span class="chip">window fresh</span><span class="arrow">→</span>
-        <span class="chip">session open</span><span class="arrow">→</span>
-        <span class="chip">enrolled</span><span class="arrow">→</span>
-        <span class="chip">device bound</span><span class="arrow">→</span>
-        <span class="chip">timestamp ≤ 60 s</span><span class="arrow">→</span>
-        <span class="chip">ECDSA signature</span><span class="arrow">→</span>
-        <span class="chip">nonce unused</span><span class="arrow">→</span>
-        <span class="chip end">append to chain</span>
-      </div>
-    </div>
-  </div>
-</section>
+<div class="cards">
+  <a href="problem-statement.html"><b>Problem Statement</b><span>What goes wrong with manual and plain-QR attendance.</span></a>
+  <a href="architecture.html"><b>System Architecture</b><span>Components, keys and how they connect.</span></a>
+  <a href="workflow.html"><b>Attendance Flow</b><span>From QR display to a signed report, step by step.</span></a>
+  <a href="attacks.html"><b>Attacks &amp; Security</b><span>Twelve attacks run live, and what each one hits.</span></a>
+  <a href="implementation.html"><b>Implementation &amp; Testing</b><span>Modules, test plan and results.</span></a>
+  <a href="https://github.com/kushalkou/cns-qr-attendance"><b>Source Code</b><span>Full code, tests and run instructions on GitHub.</span></a>
+</div>
 
-<section id="crypto">
-  <div class="wrap">
-    <div class="head reveal">
-      <div><span class="num">03 · Cryptography</span><h2>One primitive per job.</h2></div>
-      <p>No custom algorithms: only standard primitives, each chosen for a specific threat. The protocol logic around them is written out in about 180 lines in <code>crypto_core.py</code>.</p>
-    </div>
-    <div class="grid">
-      <div class="card reveal"><span class="tag">Authenticity · freshness</span><h3>HMAC-SHA256</h3><p>Only the server can produce a valid QR tag. Changing the time window or the session ID breaks it.</p><pre>w   = ⌊t / 10⌋
-tag = HMAC(K_sid, sid ‖ w)[:16]
-QR  = sid.w.tag</pre></div>
-      <div class="card reveal"><span class="tag">Device binding</span><h3>ECDSA P-256</h3><p>Generated in the browser with WebCrypto, marked non-extractable. A friend who has the password still doesn't have the phone's key.</p><pre>sig = Sign(d_phone,
-  token ‖ uid ‖ ts ‖ nonce)</pre></div>
-      <div class="card reveal"><span class="tag">Replay protection</span><h3>Nonce + timestamp</h3><p>Each signed request is valid once, within 60 seconds. A request captured and resent is rejected.</p><pre>nonce ← 144 random bits
-reject if seen(nonce)
-reject if |ts − now| &gt; 60</pre></div>
-      <div class="card reveal"><span class="tag">Key management</span><h3>HKDF</h3><p>One master key yields independent keys for each class and for wrapping the signing key. One leaked key exposes nothing else.</p><pre>K_sid  = HKDF(M, "qr-token|sid")
-K_wrap = HKDF(M, "report-key-wrap")</pre></div>
-      <div class="card reveal"><span class="tag">Non-repudiation</span><h3>Ed25519</h3><p>Closing a session produces a signed report. Anyone can verify it offline with only the public key.</p><pre>σ = Sign(sk, canonical(report))
-Verify(pk, report, σ) → ✓ / ✗</pre></div>
-      <div class="card reveal"><span class="tag">Credentials</span><h3>Argon2id</h3><p>Memory-hard password hashing with a random salt per user, plus account lockout after five failed logins.</p><pre>$argon2id$v=19$m=65536,t=3,p=4
-$&lt;salt&gt;$&lt;hash&gt;</pre></div>
-      <div class="card full reveal"><span class="tag">Integrity</span><h3>SHA-256 hash chain</h3><p>Each record includes the hash of the record before it. Edit one row and its hash stops matching. Recompute every hash after it, and the chain no longer matches the latest hash locked into each signed report.</p>
-        <div class="chain">
-          <svg viewBox="0 0 760 120" role="img" aria-label="Hash chain: each record's hash includes the previous record's hash; the last hash is locked into the Ed25519-signed report">
-            <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8b8880"/></marker></defs>
-            <g font-family="ui-monospace, SF Mono, Menlo, monospace" font-size="12" fill="#141414">
-              <rect x="1" y="30" width="130" height="60" rx="9" fill="#fbfaf7" stroke="#e7e4dc"/>
-              <text x="66" y="56" text-anchor="middle">h₀ = 000…0</text><text x="66" y="74" text-anchor="middle" fill="#8b8880">genesis</text>
-              <rect x="171" y="30" width="130" height="60" rx="9" fill="#fff" stroke="#e7e4dc"/>
-              <text x="236" y="56" text-anchor="middle">record 1</text><text x="236" y="74" text-anchor="middle" fill="#8b8880">h₁ = H(h₀‖r₁)</text>
-              <rect x="341" y="30" width="130" height="60" rx="9" fill="#fff" stroke="#e7e4dc"/>
-              <text x="406" y="56" text-anchor="middle">record 2</text><text x="406" y="74" text-anchor="middle" fill="#8b8880">h₂ = H(h₁‖r₂)</text>
-              <rect x="511" y="30" width="100" height="60" rx="9" fill="#fff" stroke="#e7e4dc"/>
-              <text x="561" y="56" text-anchor="middle">record n</text><text x="561" y="74" text-anchor="middle" fill="#8b8880">hₙ</text>
-              <rect x="651" y="22" width="108" height="76" rx="9" fill="#141414"/>
-              <text x="705" y="52" text-anchor="middle" fill="#fbfaf7">signed</text><text x="705" y="70" text-anchor="middle" fill="#fbfaf7">report</text><text x="705" y="86" text-anchor="middle" fill="#8b8880" font-size="10">Ed25519(hₙ)</text>
-              <path d="M131 60H169" stroke="#8b8880" marker-end="url(#ar)"/><path d="M301 60H339" stroke="#8b8880" marker-end="url(#ar)"/>
-              <path d="M471 60H509" stroke="#8b8880" stroke-dasharray="3 4" marker-end="url(#ar)"/><path d="M611 60H649" stroke="#8b8880" marker-end="url(#ar)"/>
-            </g>
-          </svg>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
-<section id="attacks">
-  <div class="wrap">
-    <div class="head reveal">
-      <div><span class="num">04 · Red team</span><h2>Twelve attacks, run live.</h2></div>
-      <p><code>scripts/attacks.py</code> attacks the running server the way a real student would, from replays and forged QRs to brute force and editing the database directly. Each attempt is rejected and recorded in the security log.</p>
-    </div>
-    <div class="attacks">
-      <div class="term reveal">
-        <div class="bar">$ python -m scripts.attacks</div>
-<pre><span class="b">Summary</span>
-  <span class="g">✓</span> Legitimate scan            <span class="d">Attendance marked</span>
-  <span class="g">✓</span> Double scan                <span class="d">Already marked present</span>
-  <span class="g">✓</span> Replay signed request      <span class="d">nonce already used</span>
-  <span class="g">✓</span> Forged HMAC                <span class="d">forged token (bad HMAC)</span>
-  <span class="g">✓</span> Proxy from friend's phone  <span class="d">signature ≠ registered device</span>
-  <span class="g">✓</span> Re-bind device             <span class="d">already bound to another device</span>
-  <span class="g">✓</span> Expired QR                 <span class="d">expired token (replay)</span>
-  <span class="g">✓</span> Student closes session     <span class="d">403 role cannot do this</span>
-  <span class="g">✓</span> Student reads admin API    <span class="d">403 role cannot do this</span>
-  <span class="g">✓</span> Account lockout            <span class="d">account locked</span>
-  <span class="g">✓</span> Edited report              <span class="d">signature INVALID</span>
-  <span class="g">✓</span> Naive DB edit              <span class="d">#30 hash mismatch</span>
-  <span class="g">✓</span> Recomputed chain           <span class="d">≠ hash locked in signed report</span>
-
-<span class="b">13/13 behaved as expected</span></pre>
-      </div>
-      <div class="side">
-        <figure class="reveal"><div class="shot"><img src="assets/tamper.webp" alt="Admin integrity check flagging record 30 as modified" loading="lazy" width="1600" height="650"></div><figcaption>One changed row in SQLite, and the integrity check points to the exact record.</figcaption></figure>
-        <figure class="reveal"><div class="shot"><img src="assets/verify.webp" alt="Public verify page confirming a report's Ed25519 signature is valid" loading="lazy" width="1600" height="500"></div><figcaption>Anyone can verify a signed report. Change one name and it comes back invalid.</figcaption></figure>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="screens">
-  <div class="wrap">
-    <div class="head reveal">
-      <div><span class="num">05 · Screens</span><h2>Built for the classroom.</h2></div>
-      <p>Three roles, each seeing only what it needs. Faculty run sessions and see defaulters at a glance. Students see their own percentage. The admin handles device resets and integrity checks.</p>
-    </div>
-    <div class="gallery reveal">
-      <figure><div class="shot"><img src="assets/student.webp" alt="Student phone: registered device, scan result and attendance per course" loading="lazy" width="780" height="1688"></div><figcaption>Student: registered device, scan result, attendance per course.</figcaption></figure>
-      <div class="stack">
-        <figure><div class="shot"><img src="assets/defaulters.webp" alt="Faculty defaulter list with students under 75 percent highlighted" loading="lazy" width="1600" height="870"></div><figcaption>Faculty: students under 75% highlighted automatically.</figcaption></figure>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section>
-  <div class="wrap two">
-    <div class="reveal">
-      <span class="num">06 · Stack</span>
-      <h3>Small, readable, no magic.</h3>
-      <dl>
-        <dt>Backend</dt><dd>Python · FastAPI · Uvicorn</dd>
-        <dt>Storage</dt><dd>SQLite</dd>
-        <dt>Frontend</dt><dd>Jinja2 · plain JS · CSS</dd>
-        <dt>Crypto</dt><dd><code>cryptography</code> · <code>hmac</code> · <code>hashlib</code> · <code>argon2-cffi</code></dd>
-        <dt>On the phone</dt><dd>WebCrypto ECDSA · IndexedDB</dd>
-        <dt>QR</dt><dd><code>qrcode</code> (server) · <code>html5-qrcode</code> (scanner)</dd>
-        <dt>Web security</dt><dd>HTTPS · HttpOnly, SameSite=Strict cookies · strict CSP</dd>
-        <dt>Testing</dt><dd>pytest · httpx attack suite</dd>
-      </dl>
-    </div>
-    <div class="reveal">
-      <span class="num">07 · Threat model</span>
-      <h3>What it doesn't stop.</h3>
-      <ul class="limits">
-        <li><b>Handing over the phone.</b> If a student gives their own unlocked phone to a friend, no QR system can tell. That would need biometrics or a face check.</li>
-        <li><b>Very fast relays.</b> A screenshot forwarded within the 10–20 s window could still work. Turning on the classroom-subnet check narrows this.</li>
-        <li><b>A compromised server.</b> Whoever holds the master key can mint tokens, so the key lives only in a git-ignored <code>.env</code> with owner-only file permissions.</li>
-        <li><b>Next steps.</b> WebAuthn passkeys for hardware-backed device keys, admin-approved device binding, and per-faculty signing keys.</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<section id="run">
-  <div class="wrap">
-    <div class="run reveal">
-      <div>
-        <h2>Run it in one command.</h2>
-        <p>Creates a virtual environment, seeds demo data, generates the keys and a TLS certificate, and starts the server on your Wi-Fi so phones can connect.</p>
-      </div>
-<pre><span class="c"># clone and start</span>
-git clone https://github.com/kushalkou/cns-qr-attendance
-cd cns-qr-attendance && ./run.sh
-
-<span class="c"># in a second terminal</span>
-pytest -q                       <span class="c"># 7 passed</span>
-python -m scripts.attacks --fast</pre>
-    </div>
-  </div>
-</section>
-
-<footer>
-  <div class="wrap">
-    <span>Built by <a href="https://github.com/kushalkou">Kushal Koujalagi</a> · Cryptography &amp; Network Security, KLE Technological University · 2026</span>
-    <a href="https://github.com/kushalkou/cns-qr-attendance">github.com/kushalkou/cns-qr-attendance</a>
-  </div>
-</footer>
-
-<script>
-  const nav = document.getElementById("nav");
-  addEventListener("scroll", () => nav.classList.toggle("scrolled", scrollY > 8), { passive: true });
-  const io = new IntersectionObserver((es) => es.forEach((e) => {
-    if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
-  }), { threshold: 0.12 });
-  document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
-</script>
+</main>
+<footer>Secure QR-Based Attendance System · Cryptography &amp; Network Security · KLE Technological University, Hubballi · <a href="https://github.com/kushalkou/cns-qr-attendance">Source on GitHub</a></footer>
+<script src="assets/site.js"></script>
 </body>
 </html>

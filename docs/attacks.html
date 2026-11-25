@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Attacks and Security Analysis · Secure QR Attendance</title>
+<meta name="description" content="Secure QR-Based Attendance System: a Cryptography & Network Security course project, KLE Technological University.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231f2933'/><path d='M8 8h6v6H8zM18 8h6v6h-6zM8 18h6v6H8zM18 18h2v2h-2zM22 22h2v2h-2zM18 22h2v2h-2zM22 18h2v2h-2z' fill='white'/></svg>">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<nav class="nav" aria-label="Main">
+  <div class="in">
+    <a class="brand" href="index.html"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#fff"/><path d="M8 8h6v6H8zM18 8h6v6h-6zM8 18h6v6H8zM18 18h2v2h-2zM22 22h2v2h-2zM18 22h2v2h-2zM22 18h2v2h-2z" fill="#1f2933"/></svg>Secure QR Attendance</a>
+    <button class="burger" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <ul class="menu">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="learning.html">Learning</a></li>
+      <li class="has-sub active"><button aria-expanded="false">Course Project <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2.5 4.5 6 8l3.5-3.5"/></svg></button><ul class="sub"><li><a href="problem-statement.html">Problem Statement</a></li><li><a href="objectives.html">Objectives</a></li><li><a href="motivation.html">Motivation</a></li><li><a href="architecture.html">System Architecture</a></li><li><a href="requirements.html">Requirements and Threat Model</a></li><li><a href="workflow.html">Attendance Flow</a></li><li><a href="implementation.html">Implementation and Testing</a></li><li><a href="attacks.html" class="current">Attacks and Security Analysis</a></li><li><a href="conclusion.html">Conclusion</a></li></ul></li>
+      <li><a href="report.html">Report</a></li>
+    </ul>
+  </div>
+</nav>
+<header class="banner"><h1>Attacks and Security Analysis</h1></header>
+<main>
+<ul class="toc"><li><a href="#lab">7.1 Attack lab</a></li><li><a href="#results">7.2 Results</a></li><li><a href="#tamper">7.3 Tamper detection</a></li><li><a href="#limits">7.4 Limitations</a></li></ul>
+<h2 id="lab">7.1 Attack Lab</h2>
+<p>The script <code>scripts/attacks.py</code> attacks the running server over HTTPS, acting as two demo students: <b>Alice</b> (in class) and <b>Bob</b> (absent). It simulates phones with real ECDSA keys, so every request looks exactly like one from the browser. Each attempt is recorded in the security event log and appears live on the faculty screen.</p>
+
+<h2 id="results">7.2 Results</h2>
+<div class="tbl"><table>
+<tr><th style="width:4%">#</th><th style="width:24%">Attack</th><th style="width:30%">Scenario</th><th style="width:24%">Defence</th><th>Result</th></tr>
+<tr><td>1</td><td>Double marking</td><td>Alice scans twice</td><td>Unique (session, student)</td><td class="ok">Blocked (409)</td></tr>
+<tr><td>2</td><td>Request replay</td><td>Captured signed request resent byte-for-byte</td><td>Nonce table</td><td class="ok">Blocked</td></tr>
+<tr><td>3</td><td>Forged QR token</td><td>Token built for the next window with a guessed tag</td><td>HMAC-SHA256</td><td class="ok">Blocked</td></tr>
+<tr><td>4</td><td>Proxy attendance</td><td>Alice logs in as Bob and scans from her phone</td><td>ECDSA device binding</td><td class="ok">Blocked (403)</td></tr>
+<tr><td>5</td><td>Device takeover</td><td>Alice re-binds Bob's account to her phone</td><td>One device per account</td><td class="ok">Blocked (409)</td></tr>
+<tr><td>6</td><td>Screenshot relay</td><td>QR photo sent to Bob, scanned 21 s later</td><td>10 s time window</td><td class="ok">Blocked</td></tr>
+<tr><td>7</td><td>Privilege escalation</td><td>Student calls close-session endpoint</td><td>RBAC</td><td class="ok">Blocked (403)</td></tr>
+<tr><td>8</td><td>Privilege escalation</td><td>Student calls admin API</td><td>RBAC</td><td class="ok">Blocked (403)</td></tr>
+<tr><td>9</td><td>Brute force</td><td>Repeated password guesses on Bob's account</td><td>Lockout (5 tries, 5 min)</td><td class="ok">Locked</td></tr>
+<tr><td>10</td><td>Report forgery</td><td>Bob added to the present list in a signed report</td><td>Ed25519 signature</td><td class="ok">Invalid</td></tr>
+<tr><td>11</td><td>Naive DB edit</td><td>Alice's record changed to Bob in SQLite</td><td>SHA-256 hash chain</td><td class="ok">Detected</td></tr>
+<tr><td>12</td><td>Smart DB edit</td><td>Same edit, then every later hash recomputed</td><td>Chain head in signed report</td><td class="ok">Detected</td></tr>
+</table></div>
+<pre class="code">$ python -m scripts.attacks
+<span class="c">...</span>
+<span class="g">13/13 behaved as expected</span>   <span class="c"># 12 attacks blocked + 1 honest scan accepted</span></pre>
+
+<h2 id="tamper">7.3 Tamper Detection</h2>
+<figure><div class="frame"><img src="assets/tamper.webp" alt="Admin integrity check flagging a modified record" loading="lazy" width="1600" height="650"></div><figcaption>Admin integrity check after one row was edited directly in SQLite: the exact record is identified.</figcaption></figure>
+<p>Each record's hash includes the previous record's hash, so changing any field breaks that record's hash. An attacker who recomputes every later hash makes the chain consistent again, but the head of the chain was pinned inside each Ed25519-signed report when the session closed. The recomputed head no longer matches, and the report cannot be re-signed without the private key.</p>
+
+<h2 id="limits">7.4 Limitations</h2>
+<div class="tbl"><table>
+<tr><th style="width:30%">Limitation</th><th style="width:36%">Why</th><th>Mitigation / future work</th></tr>
+<tr><td>Student hands over their own phone</td><td>The device is genuine; no QR scheme can tell who holds it</td><td>Biometric unlock per scan (WebAuthn / passkeys)</td></tr>
+<tr><td>First-to-bind an unused account</td><td>A friend with the password can bind an account that has no device yet</td><td>Admin-approved device binding at semester start; one device per phone across accounts</td></tr>
+<tr><td>Very fast relays</td><td>A forwarded QR may still work within 10–20 s</td><td>Enable the classroom-subnet check; shorter window</td></tr>
+<tr><td>Server compromise</td><td>Whoever holds the master key can mint tokens</td><td>Hardware security module; per-faculty signing keys</td></tr>
+<tr><td>Self-signed TLS on LAN</td><td>Phones show a certificate warning once</td><td>Locally trusted CA or a hosted domain with a public certificate</td></tr>
+</table></div>
+
+<div class="pager"><a href="implementation.html"><span>Previous</span>Implementation and Testing</a><a class="next" href="conclusion.html"><span>Next</span>Conclusion</a></div>
+</main>
+<footer>Secure QR-Based Attendance System · Cryptography &amp; Network Security · KLE Technological University, Hubballi · <a href="https://github.com/kushalkou/cns-qr-attendance">Source on GitHub</a></footer>
+<script src="assets/site.js"></script>
+</body>
+</html>

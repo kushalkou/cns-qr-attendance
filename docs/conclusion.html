@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conclusion · Secure QR Attendance</title>
+<meta name="description" content="Secure QR-Based Attendance System: a Cryptography & Network Security course project, KLE Technological University.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231f2933'/><path d='M8 8h6v6H8zM18 8h6v6h-6zM8 18h6v6H8zM18 18h2v2h-2zM22 22h2v2h-2zM18 22h2v2h-2zM22 18h2v2h-2z' fill='white'/></svg>">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<nav class="nav" aria-label="Main">
+  <div class="in">
+    <a class="brand" href="index.html"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#fff"/><path d="M8 8h6v6H8zM18 8h6v6h-6zM8 18h6v6H8zM18 18h2v2h-2zM22 22h2v2h-2zM18 22h2v2h-2zM22 18h2v2h-2z" fill="#1f2933"/></svg>Secure QR Attendance</a>
+    <button class="burger" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <ul class="menu">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="learning.html">Learning</a></li>
+      <li class="has-sub active"><button aria-expanded="false">Course Project <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2.5 4.5 6 8l3.5-3.5"/></svg></button><ul class="sub"><li><a href="problem-statement.html">Problem Statement</a></li><li><a href="objectives.html">Objectives</a></li><li><a href="motivation.html">Motivation</a></li><li><a href="architecture.html">System Architecture</a></li><li><a href="requirements.html">Requirements and Threat Model</a></li><li><a href="workflow.html">Attendance Flow</a></li><li><a href="implementation.html">Implementation and Testing</a></li><li><a href="attacks.html">Attacks and Security Analysis</a></li><li><a href="conclusion.html" class="current">Conclusion</a></li></ul></li>
+      <li><a href="report.html">Report</a></li>
+    </ul>
+  </div>
+</nav>
+<header class="banner"><h1>Conclusion</h1></header>
+<main>
+
+<h2>Conclusion</h2>
+<p>The Secure QR-Based Attendance System shows that the common ways of cheating attendance can each be stopped by a specific, standard cryptographic mechanism: <b>HMAC</b> for authentic and fresh QR codes, <b>ECDSA</b> for binding scans to a student's own phone, <b>nonces and timestamps</b> against replay, a <b>SHA-256 hash chain</b> for tamper-evident records, <b>Ed25519</b> for verifiable reports, <b>HKDF</b> for key separation and <b>Argon2id</b> for credentials.</p>
+<p>The system was tested with unit and end-to-end tests (7 / 7 passing) and with a live attack suite in which all twelve attacks were blocked or detected. For the classroom, marking attendance takes a few seconds instead of several minutes of roll call, and defaulter lists and signed reports are produced automatically.</p>
+
+<h2>Key Takeaways</h2>
+<ul class="points">
+<li>Most of the security lies in the protocol: what is signed, what is checked and in which order.</li>
+<li>Defence in depth matters: the time window, nonce, device signature and uniqueness constraint each close a gap the others leave open.</li>
+<li>Tamper evidence needs an external anchor; a hash chain alone can be recomputed, but a signed chain head cannot.</li>
+<li>A clear threat model, including what the system does <i>not</i> stop, is part of a secure design.</li>
+</ul>
+
+<h2>Future Work</h2>
+<ul class="points">
+<li>WebAuthn passkeys for hardware-backed device keys with biometric confirmation per scan.</li>
+<li>Admin-approved device registration and one-device-per-phone enforcement.</li>
+<li>Per-faculty signing keys for individual non-repudiation.</li>
+<li>Integration with the university ERP and hosted deployment with a public TLS certificate.</li>
+</ul>
+
+<div class="pager"><a href="attacks.html"><span>Previous</span>Attacks and Security Analysis</a><a class="next" href="report.html"><span>Next</span>Report</a></div>
+</main>
+<footer>Secure QR-Based Attendance System · Cryptography &amp; Network Security · KLE Technological University, Hubballi · <a href="https://github.com/kushalkou/cns-qr-attendance">Source on GitHub</a></footer>
+<script src="assets/site.js"></script>
+</body>
+</html>

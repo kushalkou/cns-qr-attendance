@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Objectives · Secure QR Attendance</title>
+<meta name="description" content="Secure QR-Based Attendance System: a Cryptography & Network Security course project, KLE Technological University.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231f2933'/><path d='M8 8h6v6H8zM18 8h6v6h-6zM8 18h6v6H8zM18 18h2v2h-2zM22 22h2v2h-2zM18 22h2v2h-2zM22 18h2v2h-2z' fill='white'/></svg>">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<nav class="nav" aria-label="Main">
+  <div class="in">
+    <a class="brand" href="index.html"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#fff"/><path d="M8 8h6v6H8zM18 8h6v6h-6zM8 18h6v6H8zM18 18h2v2h-2zM22 22h2v2h-2zM18 22h2v2h-2zM22 18h2v2h-2z" fill="#1f2933"/></svg>Secure QR Attendance</a>
+    <button class="burger" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <ul class="menu">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="learning.html">Learning</a></li>
+      <li class="has-sub active"><button aria-expanded="false">Course Project <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2.5 4.5 6 8l3.5-3.5"/></svg></button><ul class="sub"><li><a href="problem-statement.html">Problem Statement</a></li><li><a href="objectives.html" class="current">Objectives</a></li><li><a href="motivation.html">Motivation</a></li><li><a href="architecture.html">System Architecture</a></li><li><a href="requirements.html">Requirements and Threat Model</a></li><li><a href="workflow.html">Attendance Flow</a></li><li><a href="implementation.html">Implementation and Testing</a></li><li><a href="attacks.html">Attacks and Security Analysis</a></li><li><a href="conclusion.html">Conclusion</a></li></ul></li>
+      <li><a href="report.html">Report</a></li>
+    </ul>
+  </div>
+</nav>
+<header class="banner"><h1>Objectives</h1></header>
+<main>
+
+<h2>Project Objectives</h2>
+<ul class="points">
+<li><b>Stop proxy attendance</b>: ensure a student can only be marked present from their own registered device, during the live class.</li>
+<li><b>Authenticate users</b>: let only verified students, faculty and administrators log in, each with access limited to their role.</li>
+<li><b>Protect record integrity</b>: make every attendance record tamper-evident so that any change is detected and located.</li>
+<li><b>Provide verifiable reports</b>: produce signed session reports that anyone can check without access to the server or database.</li>
+<li><b>Save class time</b>: replace roll call with a scan that takes a few seconds, and automate reports and defaulter lists.</li>
+<li><b>Demonstrate the security</b>: test every mechanism with live attacks and document the remaining limitations.</li>
+</ul>
+
+<h2>Scope</h2>
+<div class="tbl"><table>
+<tr><th style="width:50%">In scope</th><th>Out of scope</th></tr>
+<tr><td>Web app for faculty, students and admin</td><td>Native Android / iOS apps</td></tr>
+<tr><td>Rotating QR, device binding, signed scans</td><td>Biometric or face verification</td></tr>
+<tr><td>Hash-chained log, signed reports, integrity check</td><td>Integration with the university ERP</td></tr>
+<tr><td>Local deployment over LAN / hotspot with TLS</td><td>Cloud hosting and high availability</td></tr>
+<tr><td>Automated attack suite and unit tests</td><td>Formal verification of the protocol</td></tr>
+</table></div>
+
+<div class="pager"><a href="problem-statement.html"><span>Previous</span>Problem Statement</a><a class="next" href="motivation.html"><span>Next</span>Motivation</a></div>
+</main>
+<footer>Secure QR-Based Attendance System · Cryptography &amp; Network Security · KLE Technological University, Hubballi · <a href="https://github.com/kushalkou/cns-qr-attendance">Source on GitHub</a></footer>
+<script src="assets/site.js"></script>
+</body>
+</html>
