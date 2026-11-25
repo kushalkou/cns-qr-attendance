@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Secure QR Attendance{% endblock %}</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/">&#9635; SecureAttend</a>
+    {% if user %}
+      <div class="who">
+        <span>{{ user.name }} <span class="pill">{{ user.role }}</span></span>
+        <form method="post" action="/logout"><button class="link">Log out</button></form>
+      </div>
+    {% else %}
+      <div class="who"><a href="/verify">Verify a report</a></div>
+    {% endif %}
+  </header>
+  <main class="wrap">
+    {% block content %}{% endblock %}
+  </main>
+  <div id="toast"></div>
+  <script src="/static/js/common.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

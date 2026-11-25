@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Admin · SecureAttend{% endblock %}
+{% block content %}
+<section class="card">
+  <h2>Integrity check</h2>
+  <p class="muted">Recomputes every hash in the attendance chain and checks it against the heads signed in reports.</p>
+  <button id="verify-btn" class="primary">Verify attendance chain</button>
+  <div id="verify-result"></div>
+</section>
+
+<section class="card">
+  <h2>Users</h2>
+  <table id="users"><thead><tr><th>Username</th><th>Name</th><th>Role</th><th>Device</th><th></th></tr></thead><tbody></tbody></table>
+  <details><summary>Add faculty</summary>
+    <form id="fac-form" class="stack">
+      <input name="username" placeholder="Username" required>
+      <input name="name" placeholder="Full name" required>
+      <input name="password" type="password" placeholder="Password (min 8)" minlength="8" required>
+      <button>Create</button>
+    </form>
+  </details>
+</section>
+
+<section class="card">
+  <h2>Security events</h2>
+  <table id="events"><thead><tr><th>Time</th><th>Event</th><th>User</th><th>IP</th><th>Detail</th></tr></thead><tbody></tbody></table>
+</section>
+{% endblock %}
+{% block scripts %}<script src="/static/js/admin.js"></script>{% endblock %}

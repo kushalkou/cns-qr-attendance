@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Live session · SecureAttend{% endblock %}
+{% block content %}
+<div class="session-head">
+  <div>
+    <h1 id="course">Session {{ sid }}</h1>
+    <p class="muted">Session <code>{{ sid }}</code> · QR rotates every {{ period }}s</p>
+  </div>
+  <div class="row">
+    <a class="btn" href="/faculty">Back</a>
+    <button id="close-btn" class="danger">Close &amp; sign report</button>
+  </div>
+</div>
+
+<div class="grid2">
+  <section class="card qr-card">
+    <div id="qr"></div>
+    <div class="bar"><div id="bar-fill"></div></div>
+    <p class="muted small mono" id="token-text"></p>
+    <p class="big"><span id="count">0</span> / <span id="enrolled">0</span> present</p>
+  </section>
+
+  <section class="card">
+    <h2>Present</h2>
+    <ul id="present" class="list"></ul>
+    <h2>Rejected attempts</h2>
+    <ul id="rejected" class="list rejected"></ul>
+    <details>
+      <summary>Manual override</summary>
+      <form id="manual-form" class="stack">
+        <input name="usn" placeholder="Student USN" required>
+        <input name="reason" placeholder="Reason (logged)" required>
+        <button>Mark present</button>
+      </form>
+    </details>
+  </section>
+</div>
+
+<section class="card hidden" id="report-card">
+  <h2>Signed report</h2>
+  <p>Ed25519 signature:</p>
+  <p class="mono small break" id="sig"></p>
+  <p>Chain head anchored: <span class="mono small" id="head"></span></p>
+  <a class="btn primary" href="/api/sessions/{{ sid }}/report" download>Download report JSON</a>
+  <a class="btn" href="/verify">Verify a report</a>
+</section>
+<div id="sid" data-sid="{{ sid }}" data-period="{{ period }}" hidden></div>
+{% endblock %}
+{% block scripts %}<script src="/static/js/session.js"></script>{% endblock %}

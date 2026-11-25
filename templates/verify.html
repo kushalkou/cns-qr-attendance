@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Verify report · SecureAttend{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>Verify a signed report</h1>
+  <p class="muted">Upload a report JSON downloaded from the system. Anyone can check it against the public key, so the issuer cannot deny it and nobody can alter it unnoticed.</p>
+  <input id="file" type="file" accept="application/json,.json">
+  <div id="out"></div>
+  <details><summary>Server public key</summary><pre id="pub" class="small"></pre></details>
+</div>
+{% endblock %}
+{% block scripts %}<script src="/static/js/verify.js"></script>{% endblock %}
